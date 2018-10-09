@@ -6,7 +6,7 @@ import os
 import csv
 import time
 import sys
-sys.path.append("C:/MOOCs/CS 7641/proj2/ABAGAIL.jar")
+sys.path.append("/Users/wessm/OMSCS/ML/CS-7641-assignment-2/ABAGAIL/ABAGAIL.jar")
 from func.nn.backprop import BackPropagationNetworkFactory
 from shared import SumOfSquaresError, DataSet, Instance
 from opt.example import NeuralNetworkOptimizationProblem
@@ -17,10 +17,9 @@ import opt.ga.StandardGeneticAlgorithm as StandardGeneticAlgorithm
 from func.nn.activation import RELU
 
 # Network parameters found "optimal" in Assignment 1
-INPUT_LAYER = 31
-HIDDEN_LAYER1 = 62
-HIDDEN_LAYER2 = 62
-HIDDEN_LAYER3 = 62
+INPUT_LAYER = 104
+HIDDEN_LAYER_1 = 100
+HIDDEN_LAYER_2 = 100
 OUTPUT_LAYER = 1
 TRAINING_ITERATIONS = 5001
 OUTFILE = './NN_OUTPUT/XXX_LOG.txt'
@@ -97,7 +96,7 @@ def main(CE):
     oa_name = "SA{}".format(CE)
     with open(OUTFILE.replace('XXX',oa_name),'w') as f:
         f.write('{},{},{},{},{},{},{},{}\n'.format('iteration','MSE_trg','MSE_val','MSE_tst','acc_trg','acc_val','acc_tst','elapsed'))
-    classification_network = factory.createClassificationNetwork([INPUT_LAYER, HIDDEN_LAYER1,HIDDEN_LAYER2,HIDDEN_LAYER3, OUTPUT_LAYER],relu)
+    classification_network = factory.createClassificationNetwork([INPUT_LAYER, HIDDEN_LAYER1,HIDDEN_LAYER2, OUTPUT_LAYER],relu)
     nnop = NeuralNetworkOptimizationProblem(data_set, classification_network, measure)
     oa = SimulatedAnnealing(1E10, CE, nnop)
     train(oa, classification_network, oa_name, training_ints,validation_ints,testing_ints, measure)
