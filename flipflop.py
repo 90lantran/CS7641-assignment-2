@@ -2,7 +2,7 @@ import sys
 import os
 import time
 
-sys.path.append("C:/MOOCs/CS 7641/proj2/ABAGAIL.jar")
+sys.path.append("/Users/wessm/OMSCS/ML/CS-7641-assignment-2/ABAGAIL/ABAGAIL.jar")
 import java.io.FileReader as FileReader
 import java.io.File as File
 import java.lang.String as String

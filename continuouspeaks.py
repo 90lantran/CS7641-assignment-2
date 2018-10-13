@@ -2,7 +2,8 @@ import sys
 import os
 import time
 
-sys.path.append("C:/MOOCs/CS 7641/proj2/ABAGAIL.jar")
+sys.path.append("/Users/wessm/OMSCS/ML/CS-7641-assignment-2/ABAGAIL/ABAGAIL.jar")
+
 import java.io.FileReader as FileReader
 import java.io.File as File
 import java.lang.String as String
@@ -44,12 +45,12 @@ Commandline parameter(s):
 """
 
 N=100
-T=49	
+T=15
 maxIters = 5001
 numTrials=5
 fill = [2] * N
 ranges = array('i', fill)
-outfile = './CONTPEAKS/CONTPEAKS_@ALG@_@N@_LOG.txt'
+outfile = './CONTPEAKS/CONTPEAKS_T15_@ALG@_@N@_LOG.txt'
 ef = ContinuousPeaksEvaluationFunction(T)
 odd = DiscreteUniformDistribution(ranges)
 nf = DiscreteChangeOneNeighbor(ranges)
@@ -74,7 +75,7 @@ for t in range(numTrials):
 	times =[0]
 	for i in range(0,maxIters,10):
 		start = clock()
-		fit.train()
+		fit.train() #calls rhc.train() 10 times and returns average
 		elapsed = time.clock()-start
 		times.append(times[-1]+elapsed)
 		fevals = ef.fevals

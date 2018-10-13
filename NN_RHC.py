@@ -21,8 +21,8 @@ INPUT_LAYER = 104
 HIDDEN_LAYER_1 = 100
 HIDDEN_LAYER_2 = 100
 OUTPUT_LAYER = 1
-TRAINING_ITERATIONS = 5001
-OUTFILE = './NN_OUTPUT/RHC_LOG.txt'
+TRAINING_ITERATIONS = 5001 # this number must end in 1 due to the way the error is calculated
+OUTFILE = './NN_OUTPUT/RHC_LOG_BALANCED.txt'
 
 
 def initialize_instances(infile):
@@ -35,7 +35,7 @@ def initialize_instances(infile):
 
         for row in reader:
             instance = Instance([float(value) for value in row[:-1]])
-            instance.setLabel(Instance(0 if float(row[-1]) < 0 else 1))
+            instance.setLabel(Instance(float(row[-1])))
             instances.append(instance)
 
     return instances
@@ -46,6 +46,11 @@ def errorOnDataSet(network,ds,measure):
     error = 0.
     correct = 0
     incorrect = 0
+    # following to calculate balanced accuracy
+    total_0 = 0.
+    correct_0 = 0.
+    total_1 = 0.
+    correct_1 = 0.
     for instance in ds:
         network.setInputValues(instance.getData())
         network.run()
@@ -54,14 +59,27 @@ def errorOnDataSet(network,ds,measure):
         predicted = max(min(predicted,1),0)
         if abs(predicted - actual) < 0.5:
             correct += 1
+            if actual == 0.:
+                total_0 += 1
+                correct_0 += 1
+            else:
+                total_1 += 1
+                correct_1 += 1
         else:
             incorrect += 1
+            if actual == 0.:
+                total_0 += 1
+            else:
+                total_1 += 1
         output = instance.getLabel()
         output_values = network.getOutputValues()
         example = Instance(output_values, Instance(output_values.get(0)))
         error += measure.value(output, example)
     MSE = error/float(N)
-    acc = correct/float(correct+incorrect)
+    # Balanced accuracy calculation
+    # acc = correct/float(correct+incorrect)
+    acc = 0.5*(correct_0/total_0 + correct_1/total_1)
+
     return MSE,acc
 	
 	
@@ -70,7 +88,10 @@ def train(oa, network, oaName, training_ints,validation_ints,testing_ints, measu
     """
     print "\nError results for %s\n---------------------------" % (oaName,)
     times = [0]
+    it = 0
     for iteration in xrange(TRAINING_ITERATIONS):
+        print it
+        it += 1
         start = time.clock()
         oa.train()
         elapsed = time.clock()-start
@@ -94,7 +115,7 @@ def main():
     relu = RELU()
     rule = RPROPUpdateRule()
     oa_names = ["RHC"]
-    classification_network = factory.createClassificationNetwork([INPUT_LAYER, HIDDEN_LAYER1,HIDDEN_LAYER2, OUTPUT_LAYER],relu)
+    classification_network = factory.createClassificationNetwork([INPUT_LAYER, HIDDEN_LAYER_1, HIDDEN_LAYER_2, OUTPUT_LAYER],relu)
     nnop = NeuralNetworkOptimizationProblem(data_set, classification_network, measure)
     oa = RandomizedHillClimbing(nnop)
     train(oa, classification_network, 'RHC', training_ints,validation_ints,testing_ints, measure)
